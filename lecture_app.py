@@ -2,8 +2,10 @@ import streamlit as st
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
-import openai
+from openai import OpenAI
 import json
+
+
 
 # ---------------------- CONFIG ----------------------
 st.set_page_config(page_title="Mes Articles", layout="wide")
@@ -13,6 +15,7 @@ if "articles" not in st.session_state:
     st.session_state.articles = []  # each article: {url, title, length, summary}
 
 # ---------------------- FUNCTIONS ----------------------
+client = OpenAI()
 
 def fetch_article_metadata(url: str):
     """Extract the title and length (word count) of an article."""
@@ -37,16 +40,18 @@ def fetch_article_metadata(url: str):
 def generate_summary(text: str, max_chars: int = 6000):
     """Call OpenAI API to summarize the article."""
     try:
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
         prompt = f"Résume ce texte en moins de {max_chars} signes :\n{text}"
 
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "user", "content": prompt}]
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
         )
-        return response.choices[0].message["content"].strip()
+
+        return response.choices[0].message.content
     except Exception as e:
-        return f"Erreur API : {e}"
+        return f"Erreur API : {e}"}"
 
 
 # ---------------------- UI ----------------------
@@ -116,3 +121,4 @@ else:
 
 st.write("---")
 st.caption("Application Streamlit minimale avec résumé IA.")
+
