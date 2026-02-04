@@ -51,7 +51,7 @@ def generate_summary(text: str, max_chars: int = 6000):
 
         return response.choices[0].message.content
     except Exception as e:
-        return f"Erreur API : {e}"}"
+        return f"Erreur API : {e}"
 
 
 # ---------------------- UI ----------------------
@@ -121,4 +121,5 @@ else:
 
 st.write("---")
 st.caption("Application Streamlit minimale avec résumé IA.")
+
 
